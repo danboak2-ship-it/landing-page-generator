@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PageCraft — AI Landing Page Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #111118;
+            --surface2: #1a1a24;
+            --border: rgba(255,255,255,0.07);
+            --accent: #e8ff47;
+            --accent-dim: rgba(232, 255, 71, 0.12);
+            --text: #f0f0f5;
+            --text-muted: #6b6b80;
+            --text-dim: #9999aa;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(232,255,71,0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 100px;
+        }
+
+        main {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 60px 40px;
+            align-items: start;
+        }
+
+        .left-panel { padding-right: 60px; }
+
+        .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2.4rem;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        h1 span { color: var(--accent); }
+
+        .subtitle {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 300;
+            padding: 14px 18px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(232,255,71,0.4);
+            box-shadow: 0 0 0 3px rgba(232,255,71,0.06);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 32px;
+            background: var(--accent);
+            color: #0a0a0f;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(232,255,71,0.25);
+        }
+
+        .btn.loading { opacity: 0.7; pointer-events: none; }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: #0a0a0f;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        .btn.loading .spinner { display: block; }
+        .btn.loading .btn-text { display: none; }
+        .btn.loading .btn-icon { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .right-panel {
+            padding-left: 60px;
+            border-left: 1px solid var(--border);
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .output-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .action-btns.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .action-btn {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .action-btn.download {
+            color: var(--accent);
+            border-color: rgba(232,255,71,0.3);
+            background: var(--accent-dim);
+        }
+
+        .preview-frame-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            height: 600px;
+            position: relative;
+        }
+
+        .preview-empty {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 300;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+        .preview-empty svg { opacity: 0.3; }
+        .preview-empty.hidden { opacity: 0; pointer-events: none; }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        iframe.visible { opacity: 1; }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 24px 40px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .footer-text span { color: var(--accent); }
+
+        @media (max-width: 900px) {
+            main { grid-template-columns: 1fr; padding: 40px 24px; }
+            .left-panel { padding-right: 0; margin-bottom: 48px; }
+            .right-panel { padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 48px; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .left-panel { animation: fadeUp 0.5s ease both; }
+        .right-panel { animation: fadeUp 0.5s ease 0.15s both; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-dot"></div>
+        PageCraft
+    </div>
+    <div class="badge">AI Powered</div>
+</header>
+
+<main>
+    <div class="left-panel">
+        <div class="eyebrow">Landing Page Generator</div>
+        <h1>Your page,<br><span>built in seconds.</span></h1>
+        <p class="subtitle">Describe your business and get a complete, professional landing page ready to deploy.</p>
+
+        <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" id="business_name" placeholder="e.g. Peak Plumbing Co.">
+        </div>
+
+        <div class="form-group">
+            <label>What do you do?</label>
+            <textarea id="description" placeholder="e.g. We provide emergency and planned plumbing services for homeowners and landlords across the West Midlands."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Target Audience</label>
+            <input type="text" id="audience" placeholder="e.g. Homeowners aged 30-60 in the West Midlands">
+        </div>
+
+        <div class="form-group">
+            <label>Colour Preference</label>
+            <input type="text" id="colour" placeholder="e.g. Dark navy and orange, or clean white and green">
+        </div>
+
+        <button class="btn" onclick="generatePage()">
+            <span class="btn-text">Generate Landing Page</span>
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+            <div class="spinner"></div>
+        </button>
+    </div>
+
+    <div class="right-panel">
+        <div class="output-header">
+            <div class="output-label">Live Preview</div>
+            <div class="action-btns" id="actionBtns">
+                <button class="action-btn" onclick="copyHTML()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                    </svg>
+                    <span id="copyText">Copy HTML</span>
+                </button>
+                <button class="action-btn download" onclick="downloadHTML()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download HTML
+                </button>
+            </div>
+        </div>
+
+        <div class="preview-frame-wrap">
+            <div class="preview-empty" id="emptyState">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Your landing page preview will appear here
+            </div>
+            <iframe id="preview"></iframe>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-text">Built with <span>Claude AI</span> — Anthropic</div>
+    <div class="footer-text">PageCraft © 2026</div>
+</footer>
+
+<script>
+    let generatedHTML = '';
+
+    async function generatePage() {
+        const business_name = document.getElementById('business_name').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const audience = document.getElementById('audience').value.trim();
+        const colour = document.getElementById('colour').value.trim();
+
+        if (!business_name || !description) {
+            document.getElementById('business_name').focus();
+            return;
+        }
+
+        const btn = document.querySelector('.btn');
+        btn.classList.add('loading');
+
+        try {
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ business_name, description, audience, colour })
+            });
+
+            const data = await response.json();
+            generatedHTML = data.html;
+
+            document.getElementById('emptyState').classList.add('hidden');
+            const iframe = document.getElementById('preview');
+            iframe.srcdoc = generatedHTML;
+            iframe.classList.add('visible');
+            document.getElementById('actionBtns').classList.add('visible');
+        } catch (err) {
+            alert('Something went wrong. Please try again.');
+        } finally {
+            btn.classList.remove('loading');
+        }
+    }
+
+    function downloadHTML() {
+        const blob = new Blob([generatedHTML], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'landing-page.html';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function copyHTML() {
+        navigator.clipboard.writeText(generatedHTML).then(() => {
+            const label = document.getElementById('copyText');
+            label.textContent = 'Copied!';
+            setTimeout(() => label.textContent = 'Copy HTML', 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
