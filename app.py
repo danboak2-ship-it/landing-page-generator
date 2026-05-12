@@ -54,13 +54,16 @@ Technical requirements:
 Return ONLY the raw HTML code. No explanation, no markdown, no code blocks. Start with <!DOCTYPE html>"""
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=4096,
+        max_tokens=16000,
         messages=[
             {"role": "user", "content": prompt}
         ]
     )
 
-    return jsonify({"html": message.content[0].text})
+    html_content = message.content[0].text
+    print(f"HTML length: {len(html_content)} characters")
+    print(f"HTML ends with: {html_content[-100:]}")
+    return jsonify({"html": html_content})
 
 if __name__ == "__main__":
     app.run(debug=True)
