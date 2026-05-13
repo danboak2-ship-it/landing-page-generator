@@ -60,10 +60,7 @@ Return ONLY the raw HTML code. No explanation, no markdown, no code blocks. Star
         ]
     )
 
-    html_content = message.content[0].text
-    print(f"HTML length: {len(html_content)} characters")
-    print(f"HTML ends with: {html_content[-100:]}")
-    return jsonify({"html": html_content})
+    return jsonify({"html": message.content[0].text})
 
 if __name__ == "__main__":
     app.run(debug=True)
